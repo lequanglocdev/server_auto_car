@@ -32,7 +32,9 @@ export const signUp = async (req, res) => {
     await User.create({
       username,
       hashedPassword,
-      email,});
+      email,
+      role: "customer",
+    });
 
     return res
       .sendStatus(204)
@@ -70,7 +72,7 @@ export const signIn = async (req, res) => {
     }
     // tạo access token và refresh token
     const accessToken = jwt.sign(
-      { userId: user._id, username: user.username },
+      { userId: user._id, username: user.username, role: user.role },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: ACCESS_TOKEN_TTL }
     );
@@ -133,7 +135,7 @@ export const refreshToken = async (req, res) => {
       return res.status(404).json({ message: "Người dùng không tồn tại." });
     }
     const newAccessToken = jwt.sign(
-      { userId: user._id, username: user.username },
+      { userId: user._id, username: user.username,role: user.role },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: ACCESS_TOKEN_TTL }
     );
