@@ -1,4 +1,5 @@
 import Customer from "../models/Customer.js ";
+import Vehicle from "../models/Vehicle.js";
 
 export const getAllCustomers = async (req, res) => {
   try {
@@ -58,3 +59,24 @@ export const deleteCustomer = async (req, res) => {
     res.status(500).send('Lỗi máy chủ');
   }
 }
+
+export const getCustomerById = async (req, res) => {
+  try {
+    const customer = await Customer.findOne({ _id: req.params.id, is_deleted: false })
+      .populate('customer_rank_id')
+      .lean();
+    if (!customer) {
+      return res.status(404).json({ message: 'Không tìm thấy khách hàng' });
+    }
+
+    // Tìm xe của khách hàng
+    const vehicles = await Vehicle.find({ customer_id: customer._id, is_deleted: false }).populate('vehicle_type_id').lean();
+
+    res.json({customer, vehicles});
+
+  } catch (error) {
+    console.error('Lỗi khi lấy thông tin khách hàng:', error.message);
+    res.status(500).send('Lỗi máy chủ');
+  }
+}
+
