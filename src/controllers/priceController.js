@@ -1,7 +1,15 @@
 import PriceHeader from "../models/PriceHeader.js";
 import PriceLine from "../models/PriceLine.js";
 
+/**
+ * 
+{
+  "price_list_name": "Bảng giá tháng 10-11",
+  "start_date": "2024-10-01T00:00:00.000Z",
+  "end_date": "2024-11-30T23:59:59.000Z"
+}
 
+ */
 
 export const addPriceHeader = async (req, res) => {
   const { price_list_name, start_date, end_date } = req.body;
@@ -34,6 +42,15 @@ export const addPriceHeader = async (req, res) => {
     res.status(500).send("Lỗi máy chủ");
   }
 };
+
+/**
+ * {
+    "price_list_name": "Bảng giá của Khánh",
+    "start_date": "2024-11-01T00:00:00.000Z",
+    "end_date": "2024-11-15T00:00:00.000Z",
+    "is_active" : true
+}
+ */
 
 export const updatePriceHeader = async (req, res) => {
   const { priceHeaderId } = req.params;
@@ -113,6 +130,15 @@ export const deletePriceHeader = async (req, res) => {
   }
 };
 
+/**
+  {
+  "service_id": "66f956cb05c4ebf9465398b5",  
+  "vehicle_type_id": "66f9395f558b2f9732f6cfdc", 
+  "price": 200000
+}
+
+ */
+
 export const addPriceLine = async (req, res) => {
   const { service_id, vehicle_type_id, price } = req.body;
   const { priceHeaderId } = req.params;
@@ -165,6 +191,17 @@ export const addPriceLine = async (req, res) => {
     res.status(500).send("Lỗi máy chủ");
   }
 };
+
+/**
+  //   const { priceLineId } = req.params;
+//   const { service_id, vehicle_type_id, price, is_active } = req.body;
+{
+    "service_id": "6707f2bf528f96675a9ace9a",
+    "vehicle_type_id": "67109ee0a17d7da4c4e22107",
+    "price": "0",
+    "is_active" : true
+}
+ */
 
 export const updatePriceLine = async (req, res) => {
   const { priceLineId } = req.params;
@@ -251,24 +288,24 @@ export const getAllPriceHeader = async (req, res) => {
   try {
     const priceHeader = await PriceHeader.find({
       is_deleted: false,
-    }).sort({is_active: -1});
-    res.json(priceHeader)
+    }).sort({ is_active: -1 });
+    res.json(priceHeader);
   } catch (error) {
-    console.error("Lỗi khi lấy danh sách ")
-    return res.status(500).send("Lỗi máy chủ")
+    console.error("Lỗi khi lấy danh sách ");
+    return res.status(500).send("Lỗi máy chủ");
   }
 };
 
-export const getPriceLineByHeader = async(req,res) =>{
-  const {priceHeaderId} = req.params
+export const getPriceLineByHeader = async (req, res) => {
+  const { priceHeaderId } = req.params;
   try {
     const priceLine = await PriceLine.find({
       price_header_id: priceHeaderId,
-      is_deleted: false
-    }).populate("service_id vehicle_type_id")
-    res.json(priceLine)
+      is_deleted: false,
+    }).populate("service_id vehicle_type_id");
+    res.json(priceLine);
   } catch (error) {
-    console.error("Lỗi khi lấy chi tiết giá")
-    res.status(500).send("Lỗi máy chủ")
+    console.error("Lỗi khi lấy chi tiết giá");
+    res.status(500).send("Lỗi máy chủ");
   }
-}
+};
