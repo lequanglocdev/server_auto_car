@@ -18,7 +18,7 @@ router.put("/:priceHeaderId", [isAdmin], updatePriceHeader);
 router.delete("/:priceHeaderId", [isAdmin], deletePriceHeader);
 router.get("/", [isAdmin], getAllPriceHeader);
 
-router.post("/", [isAdmin], addPriceLine);
+router.post("/:priceHeaderId/line", [isAdmin], addPriceLine);
 router.put("/:priceHeaderLineId", [isAdmin], updatePriceLine);
 router.delete("/:priceHeaderLineId", [isAdmin], deletePriceLine);
 router.get("/:priceHeaderId/line", [isAdmin], getPriceLineByHeader);

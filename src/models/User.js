@@ -14,7 +14,7 @@ const UserSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
       lowercase: true,
       trim: true,
@@ -32,6 +32,10 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    must_change_password: {
+      type: Boolean,
+      default: true,
+    },
     otp: {
       type: Number,
       default: 0,
@@ -46,5 +50,5 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-const User = mongoose.model("User", UserSchema)
-export default User
+const User = mongoose.model("User", UserSchema);
+export default User;

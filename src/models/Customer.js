@@ -12,7 +12,7 @@ const CustomerSchema = new mongoose.Schema(
       required: true,
       unique: true, // Assuming email is unique per customer
     },
-    username: {
+    name: {
       type: String,
       required: true, 
    },
