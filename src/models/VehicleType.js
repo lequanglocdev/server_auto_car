@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const vehicleTypeSchema = new mongoose.Schema({
-  name: {
+   vehicle_type_name: {
     type: String,
     required: true,
     unique: true

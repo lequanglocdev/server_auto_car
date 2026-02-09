@@ -29,7 +29,7 @@ app.use("/api/user", protectedRoute, userRoute);
 app.use("/api/customers", protectedRoute, customerRoute);
 app.use("/api/services", protectedRoute,  serviceRoute);
 app.use("/api/vehicles", protectedRoute, vehicleRoute );
-app.use("/api/vehicle_type",protectedRoute,vehicleTypeRoute)
+app.use("/api/vehicle-types",protectedRoute,vehicleTypeRoute)
 app.use("/api/price",protectedRoute,priceRoute)
 
 

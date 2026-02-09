@@ -2,8 +2,21 @@ import VehicleType from '../models/VehicleType.js';
 
 export const getAllVehicleTypes = async (req, res) => {
   try {
-    const vehicleTypes = await VehicleType.find({ is_deleted: false });
-    res.json(vehicleTypes);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const vehicleTypes = await VehicleType.find({ is_deleted: false })
+      .skip(skip)
+      .limit(limit)
+      .sort({ created_at: -1 });
+    const total = await VehicleType.countDocuments({ is_deleted: false });
+   
+    res.json({
+      vehicleTypes,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    });
   } catch (error) {
     console.error('Lỗi khi lấy loại xe:', error.message);
     res.status(500).send('Lỗi máy chủ');
@@ -43,8 +56,8 @@ export const addVehicleType = async (req, res) => {
 export const updateVehicleType = async (req, res) => {
   try {
     const { vehicle_type_name, description } = req.body;
-    const { id } = req.params;
-    let vehicleType = await VehicleType.findById(id);
+    const { vehicleTypeId } = req.params;
+    let vehicleType = await VehicleType.findById(vehicleTypeId);
     if(!vehicleType || vehicleType.is_deleted){
       return  res.status(404).json({message: 'Không tìm thấy loại xe'});
     } 
@@ -62,8 +75,8 @@ export const updateVehicleType = async (req, res) => {
     // Đánh dấu loại xe là đã xóa
 export const deleteVehicleType = async (req, res) => {
   try {
-    const { id } = req.params;
-    let vehicleType = await VehicleType.findById(id);
+    const { vehicleTypeId } = req.params;
+    let vehicleType = await VehicleType.findById(vehicleTypeId);
     if(!vehicleType || vehicleType.is_deleted){
       return  res.status(404).json({message: 'Không tìm thấy loại xe'});
     } 
