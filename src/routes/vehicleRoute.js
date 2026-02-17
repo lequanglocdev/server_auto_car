@@ -1,11 +1,17 @@
-import express from "express"
-import isAdmin from "../middlewares/checkAdmin.js"
-import { addVehicle, deleteVehicle, updateVehicle } from "../controllers/vehicleController.js"
+import express from "express";
+import isAdmin from "../middlewares/checkAdmin.js";
+import {
+  addVehicle,
+  deleteVehicle,
+  updateVehicle,
+} from "../controllers/vehicleController.js";
 
-const router  = express.Router()
+const router = express.Router();
 
-router.post("/",[isAdmin],addVehicle)
-router.put("/:vehicleId", [isAdmin], updateVehicle);
-router.delete("/:vehicleId", [isAdmin], deleteVehicle);
+router.post("/:customerId", [isAdmin], addVehicle);
 
-export default router
+router.put("/:customerId/:vehicleId", [isAdmin], updateVehicle);
+
+router.delete("/:customerId/:vehicleId", [isAdmin], deleteVehicle);
+
+export default router;

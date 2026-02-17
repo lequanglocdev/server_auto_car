@@ -186,3 +186,34 @@ export const getCustomerById = async (req, res) => {
     res.status(500).send("Lỗi máy chủ");
   }
 };
+
+export const getCustomerByIdWithVehicles = async (req, res) => {
+  try {
+    // Tìm khách hàng theo ID và kiểm tra is_deleted
+    const customer = await Customer.findOne({
+      _id: req.params.id,
+      is_deleted: false,
+    })
+      .populate("customer_rank_id")
+      .lean(); // Sử dụng lean() để dễ dàng chỉnh sửa dữ liệu sau khi truy vấn;
+
+    if (!customer) {
+      return res.status(404).json({ msg: "Không tìm thấy khách hàng" });
+    }
+
+    // Tìm tất cả các xe liên quan đến khách hàng này
+    const vehicles = await Vehicle.find({
+      customer_id: req.params.id,
+      is_deleted: false,
+    }).populate("vehicle_type_id","vehicle_type_name"); // Chỉ lấy trường vehicle_type_name từ vehicle_type_id
+
+    // Trả về thông tin khách hàng kèm danh sách xe
+    res.json({
+      customer,
+      vehicles,
+    });
+  } catch (err) {
+    console.error("Lỗi khi lấy chi tiết Customer:", err.message);
+    res.status(500).send("Lỗi máy chủ");
+  }
+};
