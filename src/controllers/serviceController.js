@@ -24,14 +24,19 @@ export const getAllServices = async (req, res) => {
 export const addService = async (req, res) => {
   try {
     const { service_code, name, description, time_required } = req.body;
-    const newService = new Service({
+    let existingService = await Service.findOne({ service_code });
+    if (existingService) {
+      return res.status(400).json({ message: "Mã dịch vụ đã tồn tại" });
+    }
+
+    const service = new Service({
       service_code,
       name,
       description,
       time_required,
     });
-    await newService.save();
-    res.status(201).json(newService);
+    await service.save();
+    res.status(201).json({ message: "Dịch vụ mới đã được thêm", service });
   } catch (error) {
     console.error("Lỗi khi thêm Service:", error.message);
     res.status(500).send("Lỗi máy chủ");
