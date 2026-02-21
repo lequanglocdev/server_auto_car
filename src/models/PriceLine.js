@@ -4,18 +4,34 @@ const PriceLineSchema = new mongoose.Schema(
   {
     price_header_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'PriceHeader',
+      ref: "PriceHeader",
       required: true,
     },
-    server_id: {
+    service_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Server',
+      ref: "Service",
       required: true,
-    }
-
+    },
+    vehicle_type_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "VehicleType",
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    is_active: {
+      type: Boolean,
+      default: false,
+    },
+    is_deleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  {timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
-)
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
+);
 
 const PriceLine = mongoose.model('PriceLine', PriceLineSchema);
 export default PriceLine;

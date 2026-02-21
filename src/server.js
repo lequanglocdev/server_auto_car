@@ -24,7 +24,6 @@ app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 
 // routes
 app.use("/api/auth", authRoute);
-app.use(protectedRoute)
 app.use("/api/user", protectedRoute, userRoute);
 app.use("/api/customers", protectedRoute, customerRoute);
 app.use("/api/services", protectedRoute,  serviceRoute);

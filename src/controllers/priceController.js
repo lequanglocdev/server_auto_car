@@ -142,6 +142,7 @@ export const deletePriceHeader = async (req, res) => {
 export const addPriceLine = async (req, res) => {
   const { service_id, vehicle_type_id, price } = req.body;
   const { priceHeaderId } = req.params;
+
   if (!service_id || !vehicle_type_id) {
     return res
       .status(400)
@@ -163,7 +164,7 @@ export const addPriceLine = async (req, res) => {
     return res.status(400).json({ message: "Bảng giá đã hết hạn" });
   }
   const priceLine = await PriceLine.findOne({
-    server_id: service_id,
+    service_id: service_id,
     vehicle_type_id: vehicle_type_id,
     is_active: true,
     is_deleted: false,
@@ -174,7 +175,7 @@ export const addPriceLine = async (req, res) => {
       .json({ message: "Giá của dịch vụ cho loại xe trên đã tồn tại" });
   }
   try {
-    const priceLine = new PriceLine({
+    const newLine = new PriceLine({
       price_header_id: priceHeaderId,
       service_id,
       vehicle_type_id,
@@ -182,10 +183,16 @@ export const addPriceLine = async (req, res) => {
       is_deleted: false,
       updated_at: Date.now(),
     });
-    await priceLine.save();
-    return res
-      .status(201)
-      .json({ message: "Chi tiết giá đã được thêm vào bảng giá", priceLine });
+    await newLine.save();
+    const populatedLine = await PriceLine.findById(newLine._id)
+      .populate("service_id")
+      .populate("vehicle_type_id")
+      .sort({ created_at: -1 });
+
+    return res.status(201).json({
+      message: "Chi tiết giá đã được thêm vào bảng giá",
+      priceLine: populatedLine,
+    });
   } catch (error) {
     console.error("Lỗi khi thêm chi tiết giá", error.message);
     res.status(500).send("Lỗi máy chủ");
