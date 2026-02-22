@@ -28,3 +28,7 @@ const AppointmentServiceSchema = new mongoose.Schema(
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at'}
   }
 )
+
+const AppointmentService = mongoose.model("AppointmentService",AppointmentServiceSchema);
+
+export default AppointmentService

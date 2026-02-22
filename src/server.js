@@ -8,6 +8,8 @@ import serviceRoute from "./routes/serviceRoute.js";
 import vehicleRoute from "./routes/vehicleRoute.js"
 import vehicleTypeRoute from "./routes/vehicleType.js"
 import priceRoute from "./routes/priceRoute.js"
+import promotionRoute from "./routes/promotionRoute.js"
+
 import cors from "cors";
 import { protectedRoute } from "./middlewares/authMiddleware.js";
 import cookieParser from "cookie-parser";
@@ -30,7 +32,7 @@ app.use("/api/services", protectedRoute,  serviceRoute);
 app.use("/api/vehicles", protectedRoute, vehicleRoute );
 app.use("/api/vehicle-types",protectedRoute,vehicleTypeRoute)
 app.use("/api/price",protectedRoute,priceRoute)
-
+app.use("/api/promotion", protectedRoute, promotionRoute);
 
 // start server
 

@@ -7,6 +7,8 @@ import {
   deletePriceLine,
   getAllPriceHeader,
   getPriceLineByHeader,
+  togglePriceLineStatus,
+  // togglePriceLineStatus,
   updatePriceHeader,
   updatePriceLine,
 } from "../controllers/priceController.js";
@@ -19,8 +21,9 @@ router.delete("/:priceHeaderId", [isAdmin], deletePriceHeader);
 router.get("/", [isAdmin], getAllPriceHeader);
 
 router.post("/:priceHeaderId/line", [isAdmin], addPriceLine);
-router.put("/:priceHeaderLineId", [isAdmin], updatePriceLine);
-router.delete("/:priceHeaderLineId", [isAdmin], deletePriceLine);
+router.put("/line/:priceLineId", [isAdmin], updatePriceLine);
+router.delete("/line/:priceLineId", [isAdmin], deletePriceLine);
 router.get("/:priceHeaderId/line", [isAdmin], getPriceLineByHeader);
+router.patch("/line/:id/toggle", [isAdmin], togglePriceLineStatus);
 
 export default router

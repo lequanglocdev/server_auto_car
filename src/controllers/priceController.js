@@ -1,3 +1,4 @@
+import AppointmentService from "../models/AppointmentService.js";
 import PriceHeader from "../models/PriceHeader.js";
 import PriceLine from "../models/PriceLine.js";
 
@@ -207,6 +208,7 @@ export const addPriceLine = async (req, res) => {
     "vehicle_type_id": "67109ee0a17d7da4c4e22107",
     "price": "0",
     "is_active" : true
+    priceLineId
 }
  */
 
@@ -221,7 +223,7 @@ export const updatePriceLine = async (req, res) => {
   ) {
     let priceLine = await PriceLine.findById(priceLineId);
     if (!priceLine || priceLine.is_deleted) {
-      return res.status(404).json({ msg: "Không tìm thấy chi tiết giá" });
+      return res.status(404).json({ message: "Không tìm thấy chi tiết giá" });
     }
     let price = await PriceLine.findOne({
       service_id: priceLine.service_id,
@@ -232,31 +234,33 @@ export const updatePriceLine = async (req, res) => {
     if (price) {
       return res
         .status(400)
-        .json({ msg: "Giá của dịch vụ cho loại xe trên đã tồn tại" });
+        .json({ message: "Giá của dịch vụ cho loại xe trên đã tồn tại" });
     }
     priceLine.is_active = is_active;
     priceLine.updated_at = Date.now();
     await priceLine.save();
+    
     return res
       .status(200)
-      .json({ msg: "Chi tiết giá đã được cập nhật", priceLine });
+      .json({ message: "Chi tiết giá đã được cập nhật", priceLine });
   }
 
   try {
     let appointmentService = await AppointmentService.find({
       price_line_id: priceLineId,
     });
-    if (appointmentService) {
+    if (appointmentService.length > 0) {
       return res
         .status(400)
-        .json({ msg: "Không thể cập nhật giá đã được sử dụng trong lịch hẹn" });
+        .json({ message: "Không thể cập nhật giá đã được sử dụng trong lịch hẹn" });
     }
     let priceLine = await PriceLine.findById(priceLineId);
+      
     if (!priceLine || priceLine.is_deleted) {
-      return res.status(404).json({ msg: "Không tìm thấy chi tiết giá" });
+      return res.status(404).json({ message: "Không tìm thấy chi tiết giá" });
     }
     if (price <= 0) {
-      return res.status(400).json({ msg: "Giá không hợp lệ" });
+      return res.status(400).json({ message: "Giá không hợp lệ" });
     }
     if (service_id) priceLine.service_id = service_id;
     if (vehicle_type_id) priceLine.vehicle_type_id = vehicle_type_id;
@@ -265,7 +269,10 @@ export const updatePriceLine = async (req, res) => {
 
     priceLine.updated_at = Date.now();
     await priceLine.save();
-    res.json({ msg: "Chi tiết giá đã được cập nhật", priceLine });
+    priceLine = await PriceLine.findById(priceLine._id)
+      .populate("service_id")
+      .populate("vehicle_type_id");
+    res.json({ message: "Chi tiết giá đã được cập nhật", priceLine });
   } catch (err) {
     console.error("Lỗi khi cập nhật chi tiết giá:", err.message);
     res.status(500).send("Lỗi máy chủ trong cập nhật chi tiết giá");
@@ -314,5 +321,36 @@ export const getPriceLineByHeader = async (req, res) => {
   } catch (error) {
     console.error("Lỗi khi lấy chi tiết giá");
     res.status(500).send("Lỗi máy chủ");
+  }
+};
+
+export const togglePriceLineStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const priceLine = await PriceLine.findById(id);
+
+    if (!priceLine || priceLine.is_deleted) {
+      return res.status(404).json({
+        message: "Không tìm thấy chi tiết giá",
+      });
+    }
+
+    priceLine.is_active = !priceLine.is_active;
+    priceLine.updated_at = Date.now();
+
+    await priceLine.save();
+
+    const populatedLine = await PriceLine.findById(id)
+      .populate("service_id")
+      .populate("vehicle_type_id");
+
+    res.json({
+      message: "Cập nhật trạng thái thành công",
+      priceLine: populatedLine,
+    });
+  } catch (error) {
+    console.error("Lỗi khi toggle trạng thái", error.message);
+    res.status(500).json({ message: "Lỗi máy chủ" });
   }
 };

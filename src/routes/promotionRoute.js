@@ -1,21 +1,39 @@
-import express from "express"
-import isAdmin from "../middlewares/checkAdmin"
-import { addPriceHeader } from "../controllers/priceController"
-import { addPromotionLine, deletePromotionDetail, deletePromotionHeader, deletePromotionLine, getAllPromotionLine, getAllPromotions, getPromotionDetail, updatePromotionDetail, updatePromotionHeader, updatePromotionLine } from "../controllers/promotionController"
+import express from "express";
+import isAdmin from "../middlewares/checkAdmin.js";
 
-const router = express.Router()
+import {
+  addPromotionHeader,
+  getAllPromotions,
+  updatePromotionHeader,
+  deletePromotionHeader,
+  getAllPromotionLine,
+  addPromotionLine,
+  updatePromotionLine,
+  deletePromotionLine,
+  getPromotionDetail,
+  addPromotionDetail,
+  updatePromotionDetail,
+  deletePromotionDetail,
+} from "../controllers/promotionController.js";
 
-router.get("/",[isAdmin],getAllPromotions)
-router.post("/:promotionHeaderId",[isAdmin],addPriceHeader)
-router.put("/:promotionHeaderId",[isAdmin],updatePromotionHeader)
-router.delete("/:promotionHeaderId",[isAdmin],deletePromotionHeader)
+const router = express.Router();
 
-router.get("/line",[isAdmin],getAllPromotionLine)
-router.post("/:promotionHeaderId/line",[isAdmin],addPromotionLine)
-router.put("/line/:promotionLineId",[isAdmin],updatePromotionLine)
-router.delete("/line/:promotionLineId",[isAdmin],deletePromotionLine)
+// ===== Promotion Header =====
+router.get("/", [isAdmin], getAllPromotions);
+router.post("/", [isAdmin], addPromotionHeader);
+router.put("/:promotionHeaderId", [isAdmin], updatePromotionHeader);
+router.delete("/:promotionHeaderId", [isAdmin], deletePromotionHeader);
 
-router.get("/line/details/:promotionLineId",[isAdmin],getPromotionDetail)
-router.post("/:promotionHeaderId/detail",[isAdmin],addPromotionLine)
-router.put("/detail/:promotionDetailId",[isAdmin],updatePromotionDetail)
-router.delete("detail/:promotionDetailId",[isAdmin],deletePromotionDetail)
+// ===== Promotion Line =====
+router.get("/:promotionHeaderId/line", [isAdmin], getAllPromotionLine);
+router.post("/:promotionHeaderId/line", [isAdmin], addPromotionLine);
+router.put("/line/:promotionLineId", [isAdmin], updatePromotionLine);
+router.delete("/line/:promotionLineId", [isAdmin], deletePromotionLine);
+
+// ===== Promotion Detail =====
+router.get("/line/:promotionLineId/detail", [isAdmin], getPromotionDetail);
+router.post("/line/:promotionLineId/detail", [isAdmin], addPromotionDetail);
+router.put("/detail/:promotionDetailId", [isAdmin], updatePromotionDetail);
+router.delete("/detail/:promotionDetailId", [isAdmin], deletePromotionDetail);
+
+export default router;

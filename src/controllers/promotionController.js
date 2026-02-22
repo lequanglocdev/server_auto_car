@@ -1,7 +1,7 @@
-import Invoice from "../models/Invoice";
-import PromotionHeader from "../models/PromotionHeader";
-import PromotionLine from "../models/PromotionLine";
-import PromotionDetail from "../models/PromotionDetail"
+import Invoice from "../models/Invoice.js";
+import PromotionHeader from "../models/PromotionHeader.js";
+import PromotionLine from "../models/PromotionLine.js";
+import PromotionDetail from "../models/PromotionDetail.js"
 
 export const getAllPromotions = async (req, res) => {
   try {
@@ -72,7 +72,7 @@ export const addPromotionHeader = async (req, res) => {
     await promotionHeader.save();
 
     res.status(201).json({
-      msg: "Chương trình khuyến mãi mới đã được thêm",
+      message: "Chương trình khuyến mãi mới đã được thêm",
       promotionHeader,
     });
   } catch (error) {
@@ -97,29 +97,29 @@ export const updatePromotionHeader = async (req, res) => {
     if (!promotionHeader || promotionHeader.is_deleted) {
       return res
         .status(404)
-        .json({ msg: "Không tìm thấy chương trình khuyến mãi" });
+        .json({ message: "Không tìm thấy chương trình khuyến mãi" });
     }
     promotionHeader.is_active = is_active;
     promotionHeader.updated_at = Date.now();
     await promotionHeader.save();
     res.status(200).json({
-      msg: "Cập nhật trạng thái khuyến mãi thành công",
+      message: "Cập nhật trạng thái khuyến mãi thành công",
       promotionHeader,
     });
   }
   if (start_date >= end_date) {
-    return res.status(400).json({ msg: "Ngày kết thúc phải sau ngày bắt đầu" });
+    return res.status(400).json({ message: "Ngày kết thúc phải sau ngày bắt đầu" });
   }
   if (end_date <= Date.now()) {
     return res
       .status(400)
-      .json({ msg: "Ngày kết thúc phải sau ngày hiện tại" });
+      .json({ message: "Ngày kết thúc phải sau ngày hiện tại" });
   }
 
   let invoice = await Invoice.find({ promotion_header_id: promotionHeaderId });
   if (invoice.length > 0) {
     return res.status(400).json({
-      msg: "Chương trình khuyến mãi này đang được sử dụng trong hóa đơn. Không thể cập nhật",
+      message: "Chương trình khuyến mãi này đang được sử dụng trong hóa đơn. Không thể cập nhật",
     });
   }
   try {
@@ -127,7 +127,7 @@ export const updatePromotionHeader = async (req, res) => {
     if (!promotionHeader || promotionHeader.is_deleted) {
       return res
         .status(404)
-        .json({ msg: "Không tìm thấy chương trình khuyến mãi" });
+        .json({ message: "Không tìm thấy chương trình khuyến mãi" });
     }
 
     if (name) promotionHeader.name = name;
@@ -140,7 +140,7 @@ export const updatePromotionHeader = async (req, res) => {
     await promotionHeader.save();
 
     res.json({
-      msg: "Cập nhật chương trình khuyến mãi thành công",
+      message: "Cập nhật chương trình khuyến mãi thành công",
       promotionHeader,
     });
   } catch (error) {
@@ -214,19 +214,19 @@ export const addPromotionLine = async (req, res) => {
       .json({ message: "Không tìm thấy chương trình khuyến mãi" });
   }
   if (promotion_header.is_deleted) {
-    return res.status(404).json({ msg: "Chương trình khuyến mãi đã bị xóa" });
+    return res.status(404).json({ message: "Chương trình khuyến mãi đã bị xóa" });
   }
   if (!promotion_header.is_active) {
-    return res.status(400).json({ msg: "Chương trình khuyến mãi đang bị tắt" });
+    return res.status(400).json({ message: "Chương trình khuyến mãi đang bị tắt" });
   }
   if (promotion_header.start_date > start_date) {
     return res.status(400).json({
-      msg: "Ngày bắt đầu phải sau ngày bắt đầu của chương trình khuyến mãi",
+      message: "Ngày bắt đầu phải sau ngày bắt đầu của chương trình khuyến mãi",
     });
   }
   if (promotion_header.end_date < end_date) {
     return res.status(400).json({
-      msg: "Ngày kết thúc phải trước ngày kết thúc của chương trình khuyến mãi",
+      message: "Ngày kết thúc phải trước ngày kết thúc của chương trình khuyến mãi",
     });
   }
   try {
@@ -245,7 +245,7 @@ export const addPromotionLine = async (req, res) => {
     await promotionLine.save();
 
     res.status(201).json({
-      msg: "Chi tiết khuyến mãi đã được thêm vào chương trình khuyến mãi",
+      message: "Chi tiết khuyến mãi đã được thêm vào chương trình khuyến mãi",
       promotionLine,
     });
   } catch (error) {
@@ -270,7 +270,7 @@ export const updatePromotionLine = async (req, res) => {
     promotionLine.updated_at = Date.now();
     await promotionLine.save();
     res.json({
-      msg: "Cập nhật trạng thái khuyến mãi thành công",
+      message: "Cập nhật trạng thái khuyến mãi thành công",
       promotionLine,
     });
   }
@@ -290,7 +290,7 @@ export const updatePromotionLine = async (req, res) => {
     promotionLine.updated_at = Date.now();
     await promotionLine.save();
 
-    res.json({ msg: "Cập nhật khuyến mãi thành công", promotionLine });
+    res.json({ message: "Cập nhật khuyến mãi thành công", promotionLine });
   } catch (error) {
     console.error("Lỗi khi cập nhật dòng khuyến mãi:", err.message);
     res.status(500).send("Lỗi máy chủ");
@@ -305,20 +305,20 @@ export const deletePromotionLine = async (req, res) => {
   });
   if (promotionDetail.length > 0) {
     return res.status(400).json({
-      msg: "Dòng khuyến mãi này đang được sử dụng trong chi tiết khuyến mãi",
+      message: "Dòng khuyến mãi này đang được sử dụng trong chi tiết khuyến mãi",
     });
   }
   try {
     let promotionLine = await PromotionLine.findById(promotionLineId);
     if (!promotionLine || promotionLine.is_deleted) {
-      return res.status(404).json({ msg: "Không tìm thấy dòng khuyến mãi" });
+      return res.status(404).json({ message: "Không tìm thấy dòng khuyến mãi" });
     }
 
     promotionLine.is_deleted = true;
     promotionLine.updated_at = Date.now();
 
     await promotionLine.save();
-    res.json({ msg: "Dòng khuyến mãi đã được xóa", promotionLine });
+    res.json({ message: "Dòng khuyến mãi đã được xóa", promotionLine });
   } catch (err) {
     console.error("Lỗi khi xóa dòng khuyến mãi:", err.message);
     res.status(500).send("Lỗi máy chủ");
@@ -365,7 +365,7 @@ export const addPromotionDetail = async (req,res) =>{
      if (min_order_value < 0) {
        return res
          .status(400)
-         .json({ msg: "Giá trị đơn hàng tối thiểu không hợp lệ" });
+         .json({ message: "Giá trị đơn hàng tối thiểu không hợp lệ" });
      }
      if (!applicable_rank_id) {
        const promotionDetail = new PromotionDetail({
@@ -376,7 +376,7 @@ export const addPromotionDetail = async (req,res) =>{
        await promotionDetail.save();
        res
          .status(201)
-         .json({ msg: "Chi tiết khuyến mãi đã được thêm", promotionDetail });
+         .json({ message: "Chi tiết khuyến mãi đã được thêm", promotionDetail });
      } else{
        const promotionDetail = new PromotionDetail({
          promotion_line_id: promotionLineId,
@@ -387,7 +387,7 @@ export const addPromotionDetail = async (req,res) =>{
        await promotionDetail.save();
        res
          .status(201)
-         .json({ msg: "Chi tiết khuyến mãi đã được thêm", promotionDetail });
+         .json({ message: "Chi tiết khuyến mãi đã được thêm", promotionDetail });
      }
   } catch (error) {
     console.log("Lỗi khi thêm chi tiết khuyến mãi",error.message)
@@ -415,13 +415,13 @@ export const updatePromotionDetail = async (req,res) =>{
     if (!promotionDetail || promotionDetail.is_deleted) {
       return res
         .status(404)
-        .json({ msg: "Không tìm thấy chi tiết khuyến mãi" });
+        .json({ message: "Không tìm thấy chi tiết khuyến mãi" });
     }
     promotionDetail.is_active = is_active;
     promotionDetail.updated_at = Date.now();
     await promotionDetail.save();
     res.json({
-      msg: "Cập nhật trạng thái khuyến mãi thành công",
+      message: "Cập nhật trạng thái khuyến mãi thành công",
       promotionDetail,
     });
   }
@@ -431,7 +431,7 @@ export const updatePromotionDetail = async (req,res) =>{
     if (!promotionDetail || promotionDetail.is_deleted) {
       return res
         .status(404)
-        .json({ msg: "Không tìm thấy chi tiết khuyến mãi" });
+        .json({ message: "Không tìm thấy chi tiết khuyến mãi" });
     }
     let promotionLine = await PromotionLine.findById(
       promotionDetail.promotion_line_id
@@ -445,7 +445,7 @@ export const updatePromotionDetail = async (req,res) =>{
     if (invoice.length > 0) {
       return res
         .status(400)
-        .json({ msg: "Khuyến mãi này đang được sử dụng trong hóa đơn" });
+        .json({ message: "Khuyến mãi này đang được sử dụng trong hóa đơn" });
     }
     // Cập nhật thông tin nếu có
     if (applicable_rank_id)
@@ -461,7 +461,7 @@ export const updatePromotionDetail = async (req,res) =>{
     await promotionDetail.save();
 
     res.json({
-      msg: "Cập nhật chi tiết khuyến mãi thành công",
+      message: "Cập nhật chi tiết khuyến mãi thành công",
       promotionDetail,
     });
   } catch (err) {
@@ -479,13 +479,13 @@ export const deletePromotionDetail = async(req,res) =>{
      if (!promotionDetail || promotionDetail.is_deleted) {
        return res
          .status(404)
-         .json({ msg: "Không tìm thấy chi tiết khuyến mãi" });
+         .json({ message: "Không tìm thấy chi tiết khuyến mãi" });
      }
      let promotionLine = await PromotionLine.findById(
        promotionDetail.promotion_line_id
      );
      if (promotionLine.is_deleted) {
-       return res.status(404).json({ msg: "Dòng khuyến mãi đã bị xóa" });
+       return res.status(404).json({ message: "Dòng khuyến mãi đã bị xóa" });
      }
      let promotionHeader = await PromotionHeader.findById(
        promotionLine.promotion_header_id
@@ -497,7 +497,7 @@ export const deletePromotionDetail = async(req,res) =>{
        return res
          .status(400)
          .json({
-           msg: "Chương trình khuyến mãi này đang được sử dụng trong hóa đơn",
+           message: "Chương trình khuyến mãi này đang được sử dụng trong hóa đơn",
          });
      }
      // Đánh dấu chi tiết khuyến mãi là đã xóa
@@ -507,7 +507,7 @@ export const deletePromotionDetail = async(req,res) =>{
      // Lưu lại thay đổi
      await promotionDetail.save();
 
-     res.json({ msg: "Chi tiết khuyến mãi đã được xóa mềm", promotionDetail });
+     res.json({ message: "Chi tiết khuyến mãi đã được xóa mềm", promotionDetail });
    } catch (err) {
      console.error("Lỗi khi xóa chi tiết khuyến mãi:", err.message);
      res.status(500).send("Lỗi máy chủ");
