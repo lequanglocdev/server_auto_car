@@ -7,6 +7,7 @@ import {
   deletePriceLine,
   getAllPriceHeader,
   getPriceLineByHeader,
+  togglePriceHeadStatus,
   togglePriceLineStatus,
   // togglePriceLineStatus,
   updatePriceHeader,
@@ -24,6 +25,7 @@ router.post("/:priceHeaderId/line", [isAdmin], addPriceLine);
 router.put("/line/:priceLineId", [isAdmin], updatePriceLine);
 router.delete("/line/:priceLineId", [isAdmin], deletePriceLine);
 router.get("/:priceHeaderId/line", [isAdmin], getPriceLineByHeader);
+router.patch("/head/:id/toggle", [isAdmin], togglePriceHeadStatus);
 router.patch("/line/:id/toggle", [isAdmin], togglePriceLineStatus);
 
 export default router

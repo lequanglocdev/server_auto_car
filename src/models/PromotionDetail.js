@@ -5,7 +5,7 @@ const PromotionDetailSchema = new mongoose.Schema(
   {
     promotion_line_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "PromotionLine", 
+      ref: "PromotionLine",
       required: true,
     },
     service_id: {
@@ -13,9 +13,9 @@ const PromotionDetailSchema = new mongoose.Schema(
       ref: "Service",
       required: true,
     },
-    application_rank_id: {
+    applicable_rank_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "CustomerRank",  
+      ref: "CustomerRank",
       required: true,
     },
     discount_value: { type: Number, required: true },

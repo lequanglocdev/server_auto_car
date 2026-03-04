@@ -323,6 +323,37 @@ export const getPriceLineByHeader = async (req, res) => {
     res.status(500).send("Lỗi máy chủ");
   }
 };
+export const togglePriceHeadStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const priceHead = await PriceHeader.findById(id);
+
+    if (!priceHead || priceHead.is_deleted) {
+      return res.status(404).json({
+        message: "Không tìm thấy chi tiết giá",
+      });
+    }
+
+    priceHead.is_active = !priceHead.is_active;
+    priceHead.updated_at = Date.now();
+
+    await priceHead.save();
+
+    const populatedLine = await PriceHeader.findById(id)
+      // .populate("service_id")
+      // .populate("vehicle_type_id");
+
+    res.json({
+      message: "Cập nhật trạng thái thành công",
+      priceHead: populatedLine,
+    });
+  } catch (error) {
+    console.error("Lỗi khi toggle trạng thái", error.message);
+    res.status(500).json({ message: "Lỗi máy chủ" });
+  }
+};
+
 
 export const togglePriceLineStatus = async (req, res) => {
   try {

@@ -22,7 +22,7 @@ const router = express.Router();
 router.get("/", [isAdmin], getAllPromotions);
 router.post("/", [isAdmin], addPromotionHeader);
 router.put("/:promotionHeaderId", [isAdmin], updatePromotionHeader);
-router.delete("/:promotionHeaderId", [isAdmin], deletePromotionHeader);
+router.delete("/:promotionHeaderId", [isAdmin], deletePromotionHeader);  
 
 // ===== Promotion Line =====
 router.get("/:promotionHeaderId/line", [isAdmin], getAllPromotionLine);
