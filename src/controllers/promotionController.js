@@ -214,6 +214,34 @@ export const deletePromotionHeader = async (req, res) => {
   }
 };
 
+export const toggkePromotionHeaderStatus = async (req, res) => {
+  try {
+    const { id} = req.params
+    const promotionHead = await PromotionHeader.findById(id)
+    if(!promotionHead || promotionHead.is_deleted) {
+      return res.status(400).json({
+        message: "Không tìm thấy khuyến mãi"
+      })
+    }
+    promotionHead.is_active = !promotionHead.is_active;
+    promotionHead.updated_at = Date.now();
+
+    await promotionHead.save();
+
+    const populatedLine = await PromotionHeader.findById(id);
+    // .populate("service_id")
+    // .populate("vehicle_type_id");
+
+    res.json({
+      message: "Cập nhật trạng thái thành công",
+      promotionHead: populatedLine,
+    });
+  } catch (error) {
+     console.error("Lỗi khi toggle trạng thái", error.message);
+     res.status(500).json({ message: "Lỗi máy chủ" });  
+  }
+};
+
 export const getAllPromotionLine = async (req, res) => {
   const { promotionHeaderId } = req.params;
 
@@ -385,6 +413,34 @@ export const deletePromotionLine = async (req, res) => {
   }
 };
 
+export const toggkePromotionLineStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const promotionLine = await PromotionLine.findById(id);
+    if (!promotionLine || promotionLine.is_deleted) {
+      return res.status(400).json({
+        message: "Không tìm thấy khuyến mãi",
+      });
+    }
+    promotionLine.is_active = !promotionLine.is_active;
+    promotionLine.updated_at = Date.now();
+
+    await promotionLine.save();
+
+    const populatedLine = await PromotionLine.findById(id);
+    // .populate("service_id")
+    // .populate("vehicle_type_id");
+
+    res.json({
+      message: "Cập nhật trạng thái thành công",
+      promotionLine: populatedLine,
+    });
+  } catch (error) {
+    console.error("Lỗi khi toggle trạng thái", error.message);
+    res.status(500).json({ message: "Lỗi máy chủ" });
+  }
+};
+
 export const getPromotionDetail = async (req, res) => {
   const { promotionLineId } = req.params;
 
@@ -523,9 +579,13 @@ export const updatePromotionDetail = async (req, res) => {
     // Lưu lại thay đổi
     await promotionDetail.save();
 
+    const updatedDetail = await PromotionDetail.findById(promotionDetailId)
+      .populate("applicable_rank_id")
+      .populate("service_id");
+
     res.json({
       message: "Cập nhật chi tiết khuyến mãi thành công",
-      promotionDetail,
+      promotionDetail: updatedDetail,
     });
   } catch (error) {
     console.error("Lỗi khi cập nhật chi tiết khuyến mãi:", error.message);
@@ -575,5 +635,33 @@ export const deletePromotionDetail = async (req, res) => {
   } catch (error) {
     console.error("Lỗi khi xóa chi tiết khuyến mãi:", error.message);
     res.status(500).send("Lỗi máy chủ");
+  }
+};
+
+export const toggkePromotionDetailStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const promotionDetail = await PromotionDetail.findById(id);
+    if (!promotionDetail || promotionDetail.is_deleted) {
+      return res.status(400).json({
+        message: "Không tìm thấy khuyến mãi",
+      });
+    }
+    promotionDetail.is_active = !promotionDetail.is_active;
+    promotionDetail.updated_at = Date.now();
+
+    await promotionDetail.save();
+
+    const populatedDetail = await PromotionDetail.findById(id);
+    // .populate("service_id")
+    // .populate("vehicle_type_id");
+
+    res.json({
+      message: "Cập nhật trạng thái thành công",
+      promotionDetail: populatedDetail,
+    });
+  } catch (error) {
+    console.error("Lỗi khi toggle trạng thái", error.message);
+    res.status(500).json({ message: "Lỗi máy chủ" });
   }
 };
