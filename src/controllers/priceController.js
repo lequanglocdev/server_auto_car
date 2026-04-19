@@ -20,13 +20,15 @@ export const addPriceHeader = async (req, res) => {
         .status(400)
         .json({ message: "Ngày kết thúc phải sau ngày bắt đầu" });
     }
-    if (start_date <= Date.now()) {
+    if (new Date(start_date) <= new Date()) {
       return res
         .status(400)
         .json({ message: "Ngày bắt đầu phải sau ngày hiện tại" });
     }
-    if (end_date < Date.now()) {
-      return res.status(400).json({ message });
+    if (new Date(start_date) >= new Date(end_date)) {
+      return res
+        .status(400)
+        .json({ message: "Ngày kết thúc phải sau ngày bắt đầu" });
     }
     const priceHeader = new PriceHeader({
       price_list_name,
@@ -108,22 +110,16 @@ export const deletePriceHeader = async (req, res) => {
         .status(400)
         .json({ message: "Bảng giá đã có giá cho dich vu. Không thể xóa" });
     }
+    priceHeader.is_active = false;
+    priceHeader.is_deleted = true;
+    priceHeader.updated_at = Date.now();
     if (
-      priceHeader.start_date <= Date.now() &&
-      priceHeader.end_date >= Date.now()
+      new Date(priceHeader.start_date) <= new Date() &&
+      new Date(priceHeader.end_date) >= new Date()
     ) {
-      priceHeader.is_active = false;
-      priceHeader.updated_at = Date.now();
-      priceHeader.end_date = Date.now();
-      priceHeader.is_deleted = true;
-      await priceHeader.save();
-    } else {
-      priceHeader.is_active = false;
-      priceHeader.is_deleted = true;
-      priceHeader.updated_at = Date.now();
-
-      await priceHeader.save();
+      priceHeader.end_date = new Date();
     }
+    await priceHeader.save();
     res.json({ message: "Bảng giá đã được xóa", priceHeader });
   } catch (error) {
     console.log("Lỗi khi xóa bảng giá", error.message);
@@ -161,7 +157,7 @@ export const addPriceLine = async (req, res) => {
   if (!priceHeader || priceHeader.is_deleted) {
     return res.status(400).json({ message: "Không tìm thấy bảng giá" });
   }
-  if (priceHeader.end_date <= Date.now()) {
+  if (new Date(priceHeader.end_date) <= new Date()) {
     return res.status(400).json({ message: "Bảng giá đã hết hạn" });
   }
   const priceLine = await PriceLine.findOne({
@@ -239,7 +235,7 @@ export const updatePriceLine = async (req, res) => {
     priceLine.is_active = is_active;
     priceLine.updated_at = Date.now();
     await priceLine.save();
-    
+
     return res
       .status(200)
       .json({ message: "Chi tiết giá đã được cập nhật", priceLine });
@@ -252,10 +248,12 @@ export const updatePriceLine = async (req, res) => {
     if (appointmentService.length > 0) {
       return res
         .status(400)
-        .json({ message: "Không thể cập nhật giá đã được sử dụng trong lịch hẹn" });
+        .json({
+          message: "Không thể cập nhật giá đã được sử dụng trong lịch hẹn",
+        });
     }
     let priceLine = await PriceLine.findById(priceLineId);
-      
+
     if (!priceLine || priceLine.is_deleted) {
       return res.status(404).json({ message: "Không tìm thấy chi tiết giá" });
     }
@@ -340,9 +338,9 @@ export const togglePriceHeadStatus = async (req, res) => {
 
     await priceHead.save();
 
-    const populatedLine = await PriceHeader.findById(id)
-      // .populate("service_id")
-      // .populate("vehicle_type_id");
+    const populatedLine = await PriceHeader.findById(id);
+    // .populate("service_id")
+    // .populate("vehicle_type_id");
 
     res.json({
       message: "Cập nhật trạng thái thành công",
@@ -353,7 +351,6 @@ export const togglePriceHeadStatus = async (req, res) => {
     res.status(500).json({ message: "Lỗi máy chủ" });
   }
 };
-
 
 export const togglePriceLineStatus = async (req, res) => {
   try {

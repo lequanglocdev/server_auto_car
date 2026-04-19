@@ -1,24 +1,19 @@
+// models/Slot.js
 import mongoose from "mongoose";
-import moongoose from "mongoose";
 
-const SlotSchema = new mongoose.Schema (
+const SlotSchema = new mongoose.Schema(
   {
-    slot_datetime: {
-      type: Date,
-      required:true,
-      
-    },
-    duration_minutes: {
-      type: Number,
-      required: true,
+    start_time: {
+      type: String,
+      required: true, // "08:00"
     },
     status: {
       type: String,
       required: true,
-      // giới hạn các giá trị hợp lệ cho status
-      enum: ['available', 'booked', 'unavailable'],
+      enum: ["available", "booked", "unavailable"],
+      default: "available",
     },
-    capacity: { 
+    capacity: {
       type: Number,
       default: 1,
     },
@@ -27,10 +22,8 @@ const SlotSchema = new mongoose.Schema (
       default: false,
     },
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
+);
 
-  }
-)
-
-const Slot = mongoose.model("Slot",SlotSchema)
+const Slot = mongoose.model("Slot", SlotSchema);
 export default Slot;

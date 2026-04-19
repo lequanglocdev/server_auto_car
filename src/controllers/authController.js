@@ -36,12 +36,10 @@ export const signUp = async (req, res) => {
       role: "customer",
     });
 
-    return res
-      .sendStatus(204)
-      .json({
-        message:
-          "Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.",
-      });
+    return res.sendStatus(204).json({
+      message:
+        "Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.",
+    });
   } catch (error) {
     console.error("Lỗi khi gọi signUp", error);
     return res.status(500).json({ message: "Lỗi hệ thống" });
@@ -130,22 +128,24 @@ export const refreshToken = async (req, res) => {
     if (!session) {
       return res.status(403).json({ message: "Refresh token không hợp lệ" });
     }
+    if (session.expiresAt < new Date()) {
+      await Session.deleteOne({ _id: session._id });
+      return res.status(403).json({ message: "Refresh token đã hết hạn" });
+    }
     const user = await User.findById(session.userId);
     if (!user) {
       return res.status(404).json({ message: "Người dùng không tồn tại." });
     }
     const newAccessToken = jwt.sign(
-      { userId: user._id, username: user.username,role: user.role },
+      { userId: user._id, username: user.username, role: user.role },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: ACCESS_TOKEN_TTL }
     );
 
-    return res
-      .status(200)
-      .json({
-        message: "Tạo access token thành công",
-        accessToken: newAccessToken,
-      });
+    return res.status(200).json({
+      message: "Tạo access token thành công",
+      accessToken: newAccessToken,
+    });
   } catch (error) {
     console.error("Lỗi khi gọi refreshToken", error);
     return res.status(500).json({ message: "Lỗi hệ thống" });
@@ -164,7 +164,7 @@ export const acctiveAccountWithOtp = async (req, res) => {
     if (user.is_active) {
       return res.status(400).json({ message: "Tài khoản đã được kích hoạt" });
     }
-    if (user.otp !== presenInt(otp) || Date.now() > user.otp_expiry) {
+    if (user.otp !== parseInt(otp) || Date.now() > user.otp_expiry) {
       return res
         .status(400)
         .json({ message: "OTP không hợp lệ hoặc đã hết hạn" });

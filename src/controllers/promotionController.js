@@ -14,8 +14,7 @@ export const getAllPromotions = async (req, res) => {
     console.error(
       "Lỗi khi lấy danh sách chương trình khuyến mãi",
       error.message
-    );
-    res.status(500).send("Lỗi máy chủ");
+    ); res.status(500).json({ message: "Lỗi máy chủ" });
   }
 };
 

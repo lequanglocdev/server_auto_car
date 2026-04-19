@@ -10,6 +10,8 @@ import vehicleTypeRoute from "./routes/vehicleType.js"
 import priceRoute from "./routes/priceRoute.js"
 import promotionRoute from "./routes/promotionRoute.js"
 import customerRankRoute from "./routes/customerRankRoute.js"
+import slotRoute from "./routes/slotRoute.js"
+import appointmentRoute from "./routes/appointmentRoute.js"
 
 import cors from "cors";
 import { protectedRoute } from "./middlewares/authMiddleware.js";
@@ -35,6 +37,8 @@ app.use("/api/vehicle-types",protectedRoute,vehicleTypeRoute)
 app.use("/api/price",protectedRoute,priceRoute)
 app.use("/api/promotion", protectedRoute, promotionRoute);
 app.use("/api/customer-ranks",protectedRoute,customerRankRoute)
+app.use("/api/slots", protectedRoute, slotRoute);
+app.use("/api/appointments", protectedRoute, appointmentRoute);
 
 // start server
 
