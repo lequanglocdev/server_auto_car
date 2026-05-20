@@ -14,9 +14,6 @@ import mongoose from "mongoose";
 export const registerAppointment = async (req, res) => {
     const { slot_id, vehicle_id, service_ids, appointment_datetime } = req.body;
 
-    if (!slot_id) {
-        return res.status(400).json({ message: "Vui lòng chọn khung giờ" });
-    }
     if (!service_ids || service_ids.length === 0) {
         return res.status(400).json({ message: "Vui lòng cung cấp thông tin dịch vụ" });
     }

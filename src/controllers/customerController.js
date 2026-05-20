@@ -217,3 +217,37 @@ export const getCustomerByIdWithVehicles = async (req, res) => {
     res.status(500).send("Lỗi máy chủ");
   }
 };
+
+export const findCustomerByContact = async (req, res) => {
+  try {
+    const { phone_number, email } = req.query;
+
+    if (!phone_number && !email) {
+      return res
+        .status(400)
+        .json({ msg: "Vui lòng cung cấp số điện thoại hoặc email" });
+    }
+
+    const query = { is_deleted: false };
+    if (phone_number) query.phone_number = phone_number;
+    if (email) query.email = email;
+
+    const customer = await Customer.findOne(query)
+      .populate("customer_rank_id")
+      .lean();
+
+    if (!customer) {
+      return res.status(404).json({ msg: "Không tìm thấy khách hàng" });
+    }
+
+    const vehicles = await Vehicle.find({
+      customer_id: customer._id,
+      is_deleted: false,
+    }).populate("vehicle_type_id", "vehicle_type_name");
+
+    res.json({ customer, vehicles });
+  } catch (err) {
+    console.error("Lỗi tìm khách hàng:", err.message);
+    res.status(500).send("Lỗi máy chủ");
+  }
+};

@@ -1,6 +1,7 @@
-import Appointment from "../models/Appointment.js";
 import Slot from "../models/Slot.js";
-
+import Appointment from "../models/Appointment.js";
+import AppointmentService from "../models/AppointmentService.js";
+import Service from "../models/Service.js";
 // Tạo slot mới
 export const addSlot = async (req, res) => {
   try {
@@ -89,13 +90,74 @@ export const softDeleteSlot = async (req, res) => {
 // Lấy tất cả slot
 export const getAllSlots = async (req, res) => {
   try {
-    const slots = await Slot.find({ is_deleted: false }).sort({
-      start_time: 1,
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const slots = await Slot.find({ is_deleted: false })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Với mỗi slot đang booked, lấy appointment + customer info
+    const slotsWithBooking = await Promise.all(
+      slots.map(async (slot) => {
+        if (slot.status !== "booked") return slot;
+
+        const appointment = await Appointment.findOne({
+          slot_id: slot._id,
+          status: { $in: ["waiting", "in_progress"] },
+          is_deleted: false,
+        })
+          .populate("customer_id", "name phone_number")
+          .populate("vehicle_id", "license_plate manufacturer")
+          .lean();
+
+        if (!appointment) return slot;
+
+        // Tính tổng thời gian dịch vụ
+        const appointmentServices = await AppointmentService.find({
+          appointment_id: appointment._id,
+          is_deleted: false,
+        })
+          .populate({
+            path: "price_line_id",
+            populate: { path: "service_id", model: "Service" },
+          })
+          .lean();
+
+        const totalTime = appointmentServices.reduce(
+          (acc, s) => acc + (s.price_line_id?.service_id?.time_required || 0),
+          0
+        );
+
+        return {
+          ...slot,
+          booking: {
+            name: appointment.customer_id?.name || "",
+            phone: appointment.customer_id?.phone_number || "",
+            duration: totalTime,
+            booked_at: appointment.appointment_datetime,
+            appointment_id: appointment._id,
+            vehicle: `${appointment.vehicle_id?.manufacturer || ""} - ${
+              appointment.vehicle_id?.license_plate || ""
+            }`,
+          },
+        };
+      })
+    );
+
+    const total = await Slot.countDocuments({ is_deleted: false });
+
+    res.json({
+      slots: slotsWithBooking,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
     });
-    res.json(slots);
   } catch (err) {
     console.error("Lỗi khi lấy danh sách slot:", err.message);
-    res.status(500).json({ message: "Lỗi máy chủ" });
+    res.status(500).send("Lỗi máy chủ");
   }
 };
 

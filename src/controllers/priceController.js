@@ -382,3 +382,21 @@ export const togglePriceLineStatus = async (req, res) => {
     res.status(500).json({ message: "Lỗi máy chủ" });
   }
 };
+
+export const getPriceLinesByVehicleType = async (req, res) => {
+  try {
+    const { vehicle_type_id } = req.params;
+    const priceLines = await PriceLine.find({
+      vehicle_type_id,
+      is_active: true,
+      is_deleted: false,
+    })
+      .populate("service_id", "name time_required")
+      .populate("vehicle_type_id", "vehicle_type_name");
+
+    res.json(priceLines);
+  } catch (error) {
+    console.error("Lỗi khi lấy price lines theo loại xe:", error.message);
+    res.status(500).send("Lỗi máy chủ");
+  }
+};

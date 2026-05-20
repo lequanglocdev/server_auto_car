@@ -7,6 +7,7 @@ import {
   deletePriceLine,
   getAllPriceHeader,
   getPriceLineByHeader,
+  getPriceLinesByVehicleType,
   togglePriceHeadStatus,
   togglePriceLineStatus,
   // togglePriceLineStatus,
@@ -17,6 +18,11 @@ import {
 const router = express.Router();
 
 router.post("/", [isAdmin], addPriceHeader);
+router.get(
+  "/vehicle-type/:vehicle_type_id",
+  [isAdmin],
+  getPriceLinesByVehicleType
+);
 router.put("/:priceHeaderId", [isAdmin], updatePriceHeader);
 router.delete("/:priceHeaderId", [isAdmin], deletePriceHeader);
 router.get("/", [isAdmin], getAllPriceHeader);
