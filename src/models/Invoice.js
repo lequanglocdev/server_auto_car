@@ -12,6 +12,11 @@ const InvoiceSchema = new mongoose.Schema(
         ref: "Appointment",
         required: true,
       },
+      employee_id: {  
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
       promotion_header_ids: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "PromotionLine",
@@ -50,4 +55,3 @@ const InvoiceSchema = new mongoose.Schema(
 
 const Invoice = mongoose.model("Invoice", InvoiceSchema);
 export default Invoice;
-

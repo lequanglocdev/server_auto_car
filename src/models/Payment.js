@@ -9,7 +9,7 @@ const PaymentSchema = new mongoose.Schema(
             required: true,
         },
         order_code: {
-            type: Number,
+            type: String    ,
             required: true,
             unique: true,
         },

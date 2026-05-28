@@ -5,7 +5,7 @@ const SlotSchema = new mongoose.Schema(
   {
     start_time: {
       type: String,
-      required: true, // "08:00"
+      required: true,
     },
     status: {
       type: String,

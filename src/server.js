@@ -12,20 +12,27 @@ import promotionRoute from "./routes/promotionRoute.js"
 import customerRankRoute from "./routes/customerRankRoute.js"
 import slotRoute from "./routes/slotRoute.js"
 import appointmentRoute from "./routes/appointmentRoute.js"
-
+import paymentRoute from "./routes/paymentRoute.js"
 import cors from "cors";
 import { protectedRoute } from "./middlewares/authMiddleware.js";
 import cookieParser from "cookie-parser";
+import { handleVNPayReturn } from "./controllers/paymentController.js";
 
 dotenv.config();
 
+
 const app = express();
 const PORT = process.env.PORT || 5001;
+
+console.log("TMN_CODE:", process.env.VNP_TMN_CODE);
+console.log("SECRET:", process.env.VNP_HASH_SECRET);
 
 //middlewares
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+
+app.get("/api/invoices/vnpay/return", handleVNPayReturn);
 
 // routes
 app.use("/api/auth", authRoute);
@@ -39,7 +46,7 @@ app.use("/api/promotion", protectedRoute, promotionRoute);
 app.use("/api/customer-ranks",protectedRoute,customerRankRoute)
 app.use("/api/slots", protectedRoute, slotRoute);
 app.use("/api/appointments", protectedRoute, appointmentRoute);
-
+app.use("/api/invoices", protectedRoute, paymentRoute);
 // start server
 
 connectDB().then(() => {

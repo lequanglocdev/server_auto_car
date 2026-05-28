@@ -4,15 +4,22 @@ import {
   generateInvoice,
   payDirectly,
   createPaymentLink,
-  handlePaymentWebhook,
   getInvoice,
   createRefundInvoice,
+  getAllInvoices,
+  downloadInvoicePDF,
+  handleVNPayReturn,
 } from "../controllers/paymentController.js";
 
 const router = express.Router();
 
+router.get("/vnpay/return", handleVNPayReturn);
+
+
 // Tạo hóa đơn
 router.post("/generate/:appointmentId", [isAdmin], generateInvoice);
+
+router.get("/", [isAdmin], getAllInvoices);
 
 // Lấy hóa đơn
 router.get("/:invoiceId", [isAdmin], getInvoice);
@@ -20,13 +27,14 @@ router.get("/:invoiceId", [isAdmin], getInvoice);
 // Thanh toán trực tiếp (tiền mặt)
 router.post("/pay/directly/:invoiceId", [isAdmin], payDirectly);
 
-// Thanh toán online PayOS
+// Thanh toán online VNPay
 router.post("/pay/online/:invoiceId", [isAdmin], createPaymentLink);
 
-// Webhook PayOS (public - không cần auth)
-router.post("/webhook", handlePaymentWebhook);
 
 // Hoàn trả
 router.post("/refund", [isAdmin], createRefundInvoice);
+
+// Tải hóa đơn PDF
+router.get("/pdf/:invoiceId", [isAdmin], downloadInvoicePDF);
 
 export default router;
